@@ -15,10 +15,10 @@
         --text:#141416;
         --card:#ffffff;
         --shadow:0 12px 30px rgba(0,0,0,.12);
-        --pink:#ff4fa0;       /* tajuk + hearts + 'or' */
-        --pink-soft:#ff86bf;  /* subheadline & accent */
+        --pink:#ff4fa0;          /* tajuk + hearts + 'or' */
+        --pink-soft:#ff86bf;     /* subheadline & accent */
         --muted:#6a6a6a;
-        --purple:#9b5de5;     /* bunga & rama-rama */
+        --purple:#9b5de5;        /* rama-rama */
         --purple-dark:#7b3ad7;
       }
       *{box-sizing:border-box}
@@ -31,8 +31,11 @@
         -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
       }
 
-      /* hearts layer (depan sikit) */
+      /* layers: butterflies (6) > hearts (4) > card (3) > scene (1) */
+      .butterflies{position:fixed; inset:0; pointer-events:none; z-index:6}
       .hearts{position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:4}
+
+      /* hearts (pink) */
       .heart{
         position:absolute; bottom:-24px; color:var(--pink);
         font-size:16px; opacity:.95;
@@ -49,7 +52,7 @@
       .card{
         background:var(--card);
         border-radius:20px; box-shadow:var(--shadow);
-        padding:34px 30px 84px; /* extra ruang bawah utk teks kecil + scene */
+        padding:34px 30px 110px; /* ruang bawah untuk scene */
         text-align:center; max-width:760px; margin:16px; position:relative;
       }
 
@@ -63,12 +66,13 @@
         animation:popIn .9s cubic-bezier(.2,.7,.2,1) .05s forwards,
                  gentleFloat 6s ease-in-out 1.2s infinite;
       }
+      .title .n-target{ position:relative } /* anchor huruf 'n' */
       @keyframes popIn{
         0%{opacity:0; transform:translateY(18px) scale(.92)}
         60%{opacity:1; transform:translateY(-2px) scale(1.03)}
         100%{opacity:1; transform:translateY(0) scale(1)}
       }
-      @keyframes gentleFloat{ 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-3px) scale(1.01)} }
+      @keyframes gentleFloat{ 0%,100%{ transform:translateY(0) scale(1) } 50%{ transform:translateY(-3px) scale(1.01) } }
 
       .sub{
         margin:10px 0 0; font-weight:700;
@@ -92,45 +96,18 @@
       .whispers .left{text-align:left} .whispers .right{text-align:right}
       .whispers .mid{ text-align:center; color:var(--pink); font-weight:700; font-size:10px; opacity:.95 }
 
-      /* ===== Scene: boy -> girl + butterflies ===== */
-      .scene{
-        position:fixed; left:0; right:0; bottom:0;
-        height:38vh; pointer-events:none; z-index:1;
-      }
+      /* ===== Scene: budak lelaki & perempuan (statik idle) ===== */
+      .scene{ position:fixed; left:0; right:0; bottom:0; height:40vh; pointer-events:none; z-index:1 }
       .ground{
         position:absolute; left:0; right:0; bottom:0; height:26vh;
         background:linear-gradient(180deg, transparent 0%, rgba(0,0,0,.05) 60%, rgba(0,0,0,.08) 100%);
         mask: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0));
       }
-
-      /* container untuk karakter */
       .chars{
         position:absolute; left:6vw; right:6vw; bottom:4vh;
         display:flex; align-items:flex-end; justify-content:space-between;
       }
 
-      /* Boy berjalan dari kiri ke tengah */
-      .boy{
-        width:120px; max-width:28vw;
-        animation:boyWalk 6.5s ease-in-out 1 forwards;
-      }
-      @keyframes boyWalk{
-        0%   { transform:translateX(-25vw) }
-        60%  { transform:translateX(0) }
-        100% { transform:translateX(0) }
-      }
-
-      /* Girl slight bob + tilt */
-      .girl{
-        width:120px; max-width:28vw;
-        animation:girlIdle 4s ease-in-out 0.6s infinite;
-      }
-      @keyframes girlIdle{
-        0%,100%{ transform:translateY(0) rotate(0deg) }
-        50%{ transform:translateY(-3px) rotate(-1.2deg) }
-      }
-
-      /* SVG simplistik, warna neutral */
       svg{ display:block }
       .skin{ fill:#ffd9c9 }
       .hair{ fill:#3a2d24 }
@@ -138,57 +115,49 @@
       .pants{ fill:#111827 }
       .shoe{ fill:#4b5563 }
       .dress{ fill:#ef476f }
-      .flower-stem{ stroke:#2e7d32; stroke-width:3; fill:none }
-      .flower-center{ fill:var(--purple-dark) }
-      .petal{ fill:var(--purple) }
 
-      /* animasi tangan boy hulur bunga */
-      .boy-arm{
-        transform-origin: 62px 68px;
-        animation:armOffer 3s ease-in-out 2.4s forwards;
-      }
-      @keyframes armOffer{
-        0%{ transform:rotate(0deg) }
-        60%{ transform:rotate(-26deg) }
-        100%{ transform:rotate(-18deg) }
-      }
+      /* idle kecil */
+      .boy, .girl { width:120px; max-width:28vw }
+      .boy{ animation:idleBoy 4s ease-in-out infinite }
+      .girl{ animation:idleGirl 4s ease-in-out infinite }
+      @keyframes idleBoy{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-2px)} }
+      @keyframes idleGirl{ 0%,100%{transform:translateY(0) rotate(0)} 50%{transform:translateY(-2px) rotate(-1deg)} }
 
-      /* Butterflies belakang (z-index bawah card) */
-      .butterflies{
-        position:fixed; inset:0; pointer-events:none; z-index:0;
-      }
+      /* ===== Butterflies ===== */
       .butterfly{
-        position:absolute; top:60vh; left:-10vw; width:22px; height:16px; opacity:.9;
-        animation:fly linear infinite;
+        position:absolute; top:60vh; left:-10vw; width:22px; height:16px; opacity:.95;
+        will-change: transform;
       }
-      /* Bentuk rama-rama: dua sayap bujur + badan kecil */
       .butterfly::before, .butterfly::after{
-        content:""; position:absolute; top:0; width:12px; height:16px; border-radius:12px 12px 12px 12px;
+        content:""; position:absolute; top:0; width:12px; height:16px; border-radius:12px;
         background:radial-gradient(circle at 30% 40%, #fff 0 20%, transparent 21%), var(--purple);
         filter:drop-shadow(0 2px 6px rgba(155,93,229,.35));
       }
-      .butterfly::before{ left:0; transform-origin:right center; transform:rotate(18deg); animation:wingL .5s ease-in-out infinite }
-      .butterfly::after { right:0; transform-origin:left center;  transform:rotate(-18deg); animation:wingR .5s ease-in-out infinite }
-      .butterfly span{
-        position:absolute; left:9px; top:6px; width:4px; height:6px; background:var(--purple-dark); border-radius:2px;
-      }
+      .butterfly::before{ left:0; transform-origin:right center; animation:wingL var(--wingSpeed,.5s) ease-in-out infinite }
+      .butterfly::after { right:0; transform-origin:left center;  animation:wingR var(--wingSpeed,.5s) ease-in-out infinite }
+      .butterfly span{ position:absolute; left:9px; top:6px; width:4px; height:6px; background:var(--purple-dark); border-radius:2px }
+
       @keyframes wingL{ 0%,100%{transform:rotate(18deg)} 50%{transform:rotate(2deg)} }
       @keyframes wingR{ 0%,100%{transform:rotate(-18deg)} 50%{transform:rotate(-2deg)} }
 
-      /* Trajektori terbang unik guna nth-child */
+      /* generic flight paths for background butterflies (atas teks) */
       @keyframes fly{
         0%{ transform:translate(-10vw, 0) }
         100%{ transform:translate(120vw, -40vh) }
       }
-      .butterfly:nth-child(1){ top:68vh; animation-duration:16s; animation-delay:.2s }
-      .butterfly:nth-child(2){ top:62vh; animation-duration:18s; animation-delay:1.2s }
-      .butterfly:nth-child(3){ top:70vh; animation-duration:20s; animation-delay:2.2s }
-      .butterfly:nth-child(4){ top:64vh; animation-duration:17s; animation-delay:3.1s }
-      .butterfly:nth-child(5){ top:58vh; animation-duration:19s; animation-delay:4.0s }
-      .butterfly:nth-child(6){ top:66vh; animation-duration:21s; animation-delay:4.8s }
+      .bg-fly{ animation:fly linear infinite }
+      .bg1{ top:68vh; animation-duration:16s; animation-delay:.2s }
+      .bg2{ top:62vh; animation-duration:18s; animation-delay:1.2s }
+      .bg3{ top:70vh; animation-duration:20s; animation-delay:2.2s }
+      .bg4{ top:64vh; animation-duration:17s; animation-delay:3.1s }
+      .bg5{ top:58vh; animation-duration:19s; animation-delay:4.0s }
+      .bg6{ top:66vh; animation-duration:21s; animation-delay:4.8s }
+
+      /* landing butterfly (yang hinggap di 'n') */
+      .lander{ transition: transform .25s ease-out }
 
       @media (max-width:520px){
-        .card{padding:26px 18px 92px}
+        .card{padding:26px 18px 120px}
         .whispers{padding:0 12px}
         .whispers .left,.whispers .right{font-size:11px}
         .whispers .mid{font-size:9px}
@@ -197,23 +166,27 @@
     </style>
   </head>
   <body>
-    <!-- Rama-rama ungu di belakang -->
-    <div class="butterflies" aria-hidden="true">
-      <div class="butterfly"><span></span></div>
-      <div class="butterfly"><span></span></div>
-      <div class="butterfly"><span></span></div>
-      <div class="butterfly"><span></span></div>
-      <div class="butterfly"><span></span></div>
-      <div class="butterfly"><span></span></div>
+    <!-- Rama-rama ungu DI ATAS teks -->
+    <div class="butterflies" id="butterflies" aria-hidden="true">
+      <!-- background flyers -->
+      <div class="butterfly bg-fly bg1"><span></span></div>
+      <div class="butterfly bg-fly bg2"><span></span></div>
+      <div class="butterfly bg-fly bg3"><span></span></div>
+      <div class="butterfly bg-fly bg4"><span></span></div>
+      <div class="butterfly bg-fly bg5"><span></span></div>
+      <div class="butterfly bg-fly bg6"><span></span></div>
+      <!-- landing butterfly (ke huruf 'n') -->
+      <div class="butterfly lander" id="landing-butterfly" style="--wingSpeed:.45s"><span></span></div>
     </div>
 
-    <!-- hearts pink depan -->
+    <!-- hearts pink (depan teks) -->
     <div class="hearts" id="hearts"></div>
 
     <!-- kad mesej -->
     <div class="center">
       <div class="card">
-        <h1 class="title">Semangat Fadhlin</h1>
+        <!-- Balut huruf 'n' terakhir sebagai anchor pendaratan -->
+        <h1 class="title">Semangat Fadhli<span class="n-target" id="n-target">n</span></h1>
         <h2 class="sub">Be happy</h2>
         <div id="time"></div>
 
@@ -226,7 +199,7 @@
       </div>
     </div>
 
-    <!-- Scene: boy => flower => girl -->
+    <!-- Scene: mereka statik idle -->
     <div class="scene" aria-hidden="true">
       <div class="ground"></div>
       <div class="chars">
@@ -242,21 +215,9 @@
           <rect class="pants" x="64" y="72" width="10" height="28" rx="4"/>
           <rect class="shoe" x="43" y="100" width="18" height="6" rx="3"/>
           <rect class="shoe" x="61" y="100" width="18" height="6" rx="3"/>
-          <!-- tangan kiri (statik) -->
+          <!-- tangan -->
           <rect class="skin" x="38" y="48" width="10" height="6" rx="3" />
-          <!-- tangan kanan (hulur) -->
-          <g class="boy-arm">
-            <rect class="skin" x="62" y="62" width="24" height="6" rx="3"/>
-            <!-- bunga ungu di hujung tangan -->
-            <g transform="translate(86,65)">
-              <path class="flower-stem" d="M0 0 C 4 -6, 6 -8, 10 -14" />
-              <circle class="flower-center" cx="12" cy="-16" r="3"/>
-              <circle class="petal" cx="12" cy="-20" r="4"/>
-              <circle class="petal" cx="8"  cy="-16" r="4"/>
-              <circle class="petal" cx="16" cy="-16" r="4"/>
-              <circle class="petal" cx="12" cy="-12" r="4"/>
-            </g>
-          </g>
+          <rect class="skin" x="78" y="48" width="10" height="6" rx="3" />
         </svg>
 
         <!-- GIRL (SVG ringkas) -->
@@ -271,20 +232,20 @@
           <rect class="skin" x="60" y="84" width="10" height="22" rx="4"/>
           <rect class="shoe" x="48" y="106" width="16" height="6" rx="3"/>
           <rect class="shoe" x="60" y="106" width="16" height="6" rx="3"/>
-          <!-- tangan terima bunga -->
+          <!-- tangan -->
           <rect class="skin" x="36" y="56" width="22" height="6" rx="3"/>
         </svg>
       </div>
     </div>
 
     <script>
-      // jam live
+      /* ===== Jam live ===== */
       const timeEl = document.getElementById('time');
       const tick = () => timeEl.textContent = new Date().toLocaleString();
       tick(); setInterval(tick, 1000);
 
-      // hearts pink
-      const container = document.getElementById('hearts');
+      /* ===== Hearts pink ===== */
+      const heartLayer = document.getElementById('hearts');
       function spawnHeart(){
         const el = document.createElement('span');
         el.className = 'heart';
@@ -297,7 +258,7 @@
         el.style.setProperty('--drift', drift);
         el.style.setProperty('--scale', scale);
         el.style.animationDuration = duration+'s';
-        container.appendChild(el);
+        heartLayer.appendChild(el);
         el.addEventListener('animationend', ()=> el.remove());
       }
       let running = true;
@@ -312,9 +273,43 @@
         running = !document.hidden;
         if(running) loop();
       });
+
+      /* ===== Butterflies: flyers + 1 landing on 'n' ===== */
+      const nTarget = document.getElementById('n-target');
+      const lander = document.getElementById('landing-butterfly');
+
+      function landOnN(){
+        const r = nTarget.getBoundingClientRect();
+        const targetX = r.left + r.width*0.6;  // atas sedikit di hujung 'n'
+        const targetY = r.top  - 10;
+        const startX = -60;
+        const startY = window.innerHeight*0.7;
+
+        const t0 = performance.now();
+        const duration = 5500;
+        const easeInOut = t => t<.5 ? 2*t*t : -1+(4-2*t)*t;
+
+        function frame(now){
+          const p = Math.min(1, (now - t0)/duration);
+          const e = easeInOut(p);
+
+          const midX = (startX + targetX)/2 + 120;
+          const midY = (startY + targetY)/2 - 120;
+          const x = (1-e)*(1-e)*startX + 2*(1-e)*e*midX + e*e*targetX;
+          const y = (1-e)*(1-e)*startY + 2*(1-e)*e*midY + e*e*targetY;
+
+          lander.style.transform = `translate(${x}px, ${y}px)`;
+          if(p < 1){ requestAnimationFrame(frame); }
+          else{ lander.style.setProperty('--wingSpeed','.9s'); }
+        }
+        lander.style.transform = `translate(${startX}px, ${startY}px)`;
+        requestAnimationFrame(frame);
+      }
+      window.addEventListener('load', ()=> setTimeout(landOnN, 900));
     </script>
   </body>
 </html>
+
 
 
 
