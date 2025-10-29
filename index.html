@@ -4,29 +4,32 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Semangat Fadhlin</title>
+    <!-- Sweet fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
       :root{
         --bg1:#fff7fb;
         --bg2:#ffe9f6;
-        --text:#0e0e0f;         /* teks utama lebih gelap */
+        --text:#141416;
         --card:#ffffff;
         --shadow:0 12px 30px rgba(0,0,0,.12);
-        --pink:#ff4fa0;         /* hearts */
-        --pink-soft:#ff86bf;    /* “Be happy” */
+        --pink:#ff4fa0;       /* tajuk + hearts + 'or' */
+        --pink-soft:#ff86bf;  /* subheadline & accent */
+        --muted:#6a6a6a;
       }
       *{box-sizing:border-box}
       html,body{height:100%;margin:0}
       body{
-        font-family:Poppins, system-ui, Segoe UI, Arial, sans-serif;
-        color:var(--text);
+        font-family:Quicksand, system-ui, Segoe UI, Arial, sans-serif;
         background:radial-gradient(80% 80% at 50% 20%, var(--bg2), var(--bg1));
+        color:var(--text);
         overflow:hidden;
         -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
       }
 
+      /* hearts layer */
       .hearts{position:fixed; inset:0; overflow:hidden; pointer-events:none}
       .heart{
         position:absolute; bottom:-24px; color:var(--pink);
@@ -43,46 +46,73 @@
       .center{position:fixed; inset:0; display:flex; align-items:center; justify-content:center}
       .card{
         background:var(--card);
-        border-radius:18px; box-shadow:var(--shadow);
-        padding:32px 28px; text-align:center; max-width:720px; margin:16px;
+        border-radius:20px; box-shadow:var(--shadow);
+        padding:34px 30px 64px; /* ruang bawah utk teks kecil */
+        text-align:center; max-width:760px; margin:16px; position:relative;
       }
 
-      /* Headline tajam & jelas (tanpa gradient) */
-      .headline{
-        margin:0; line-height:1.15; font-weight:700;
-        color:var(--text);
-        letter-spacing:.3px;
-        /* “stroke” halus untuk ketajaman di atas latar cerah */
-        text-shadow:
-          0 0 1px rgba(0,0,0,.25),
-          0 1px 0 rgba(0,0,0,.06);
-        opacity:0; transform:translateY(14px);
-        animation:fadeUp .65s ease-out forwards;
+      /* Tajuk pink + animasi manis */
+      .title{
+        font-family:"Dancing Script", cursive;
+        font-weight:700; font-size:clamp(36px,7.2vw,68px);
+        margin:0; color:var(--pink); letter-spacing:.4px;
+        text-shadow:0 2px 0 rgba(0,0,0,.05), 0 0 18px rgba(255,79,160,.25);
+        transform:translateY(14px) scale(.96); opacity:0;
+        animation:popIn .9s cubic-bezier(.2,.7,.2,1) .05s forwards,
+                 gentleFloat 6s ease-in-out 1.2s infinite;
       }
-      .headline.big{font-size:clamp(30px,6.2vw,56px)}
-      .headline.sub{
+      @keyframes popIn{
+        0%{opacity:0; transform:translateY(18px) scale(.92)}
+        60%{opacity:1; transform:translateY(-2px) scale(1.03)}
+        100%{opacity:1; transform:translateY(0) scale(1)}
+      }
+      @keyframes gentleFloat{
+        0%,100%{ transform:translateY(0) scale(1) }
+        50%{ transform:translateY(-3px) scale(1.01) }
+      }
+
+      .sub{
+        margin:10px 0 0; font-weight:700;
         font-size:clamp(20px,4.6vw,36px);
-        margin-top:10px; font-weight:700;
-        color:var(--pink-soft);                 /* soft pink */
-        text-shadow:0 0 1px rgba(255,134,191,.35);
-        animation-delay:.50s;
+        color:var(--pink-soft);
+        text-shadow:0 0 1px rgba(255,134,191,.32);
+        opacity:0; transform:translateY(10px);
+        animation:fadeUp .6s ease-out .45s forwards;
       }
+      @keyframes fadeUp{ to{opacity:1; transform:translateY(0)} }
 
-      /* underline lembut bawah “Semangat Fadhlin” */
-      .accent{ position:relative; display:inline-block }
-      .accent::after{
-        content:""; position:absolute; left:0; right:0; bottom:-8px; height:10px;
-        background:linear-gradient(90deg, rgba(255,79,160,.25), rgba(255,79,160,.06));
-        border-radius:8px;
-      }
-
-      .pulse{display:inline-block; color:var(--pink); animation:pulse 1.7s ease-in-out infinite}
       #time{margin-top:12px; font-size:14px; opacity:.7}
 
-      @keyframes fadeUp{ to{opacity:1; transform:translateY(0)} }
-      @keyframes pulse{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
+      /* Kiri—tengah—kanan */
+      .whispers{
+        position:absolute; left:0; right:0; bottom:12px;
+        display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
+        gap:10px; padding:0 16px; pointer-events:none;
+      }
+      .whispers .left,
+      .whispers .right{
+        color:var(--muted); font-size:12px; line-height:1.25;
+      }
+      .whispers .left{ text-align:left }
+      .whispers .right{ text-align:right }
 
-      @media (max-width:420px){ .card{padding:24px 18px} }
+      /* <<< kecil & pink >>> */
+      .whispers .mid{
+        text-align:center;
+        color:var(--pink);
+        font-weight:700;
+        font-size:10px;       /* lebih kecil */
+        padding:0;            /* buang badge */
+        background:transparent;
+        opacity:.95;
+      }
+
+      @media (max-width:520px){
+        .card{padding:26px 18px 72px}
+        .whispers{padding:0 12px}
+        .whispers .left,.whispers .right{font-size:11px}
+        .whispers .mid{font-size:9px}
+      }
     </style>
   </head>
   <body>
@@ -90,11 +120,16 @@
 
     <div class="center">
       <div class="card">
-        <h1 class="headline big">
-          <span class="accent">Semangat Fadhlin</span> <span class="pulse">❤</span>
-        </h1>
-        <h2 class="headline sub">Be happy</h2>
+        <h1 class="title">Semangat Fadhlin</h1>
+        <h2 class="sub">Be happy</h2>
         <div id="time"></div>
+
+        <!-- Susunan: kiri — tengah — kanan -->
+        <div class="whispers">
+          <span class="left">One day, you will find your happiness.</span>
+          <span class="mid">or</span>
+          <span class="right">I can be your happiness.</span>
+        </div>
       </div>
     </div>
 
@@ -114,12 +149,10 @@
         const drift = (Math.random()*140-70)+'px';
         const scale = (Math.random()*0.9+0.6).toFixed(2);
         const duration = (Math.random()*4+4).toFixed(2);
-
         el.style.left = x+'vw';
         el.style.setProperty('--drift', drift);
         el.style.setProperty('--scale', scale);
         el.style.animationDuration = duration+'s';
-
         container.appendChild(el);
         el.addEventListener('animationend', ()=> el.remove());
       }
@@ -135,6 +168,10 @@
         running = !document.hidden;
         if(running) loop();
       });
+    </script>
+  </body>
+</html>
+
     </script>
   </body>
 </html>
