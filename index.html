@@ -16,6 +16,7 @@
         --pink:#ff4fa0; --pink-soft:#ff86bf;
         --muted:#6a6a6a;
         --purple:#9b5de5; --purple-dark:#7b3ad7;
+        --gold:#ffd34d;
       }
       *{box-sizing:border-box}
       html,body{height:100%;margin:0}
@@ -44,7 +45,7 @@
       .center{position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:3}
       .card{
         background:var(--card); border-radius:20px; box-shadow:var(--shadow);
-        padding:34px 30px 110px; text-align:center; max-width:760px; margin:16px; position:relative;
+        padding:34px 30px 120px; text-align:center; max-width:760px; margin:16px; position:relative;
       }
 
       /* Title */
@@ -99,10 +100,8 @@
         mask: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0));
       }
 
-      /* --- CHARACTERS: absolute so we can walk to center under the card --- */
-      .chars{
-        position:absolute; left:6vw; right:6vw; bottom:4vh; top:auto; height:calc(26vh - 4vh);
-      }
+      /* --- CHARACTERS --- */
+      .chars{ position:absolute; left:6vw; right:6vw; bottom:4vh; top:auto; height:calc(26vh - 4vh); }
       .boy, .girl { position:absolute; bottom:0; width:120px; max-width:28vw; }
       .boy{ left:0 } .girl{ right:0 }
 
@@ -139,42 +138,75 @@
       .bg6{ top:66vh; animation-duration:21s; animation-delay:4.8s }
       .lander{ transition: transform .25s ease-out }
 
-      /* --- BLOOM (bunga kecil) --- */
+      /* --- BLOOMS BOUQUET --- */
+      .bouquet{ position:absolute; bottom:16px; left:50%; transform:translateX(-50%); pointer-events:none; }
       .bloom{
-        position:absolute; bottom:10px; left:50%;
-        width:var(--sz,56px); aspect-ratio:1;
-        transform:translateX(-50%) scale(.4); opacity:0;
+        position:absolute; left:0; top:0; width:52px; aspect-ratio:1; opacity:0;
+        transform:translate(-50%, 40px) scale(.3);
         filter:drop-shadow(0 6px 12px rgba(255,79,160,.25));
-        pointer-events:none; z-index:0;
       }
-      .bloom.show{ animation:bloomIn .8s cubic-bezier(.2,.8,.2,1) forwards }
-      @keyframes bloomIn{
-        0%{ transform:translateX(-50%) scale(.2); opacity:0 }
-        60%{ transform:translateX(-50%) scale(1.08); opacity:1 }
-        100%{ transform:translateX(-50%) scale(1); opacity:1 }
+      .bloom svg{ width:100%; height:100% }
+      .bloom .petal{ fill:#ff86bf } .bloom .center{ fill:var(--gold) }
+      .bloom.show{ animation:bloomRise .9s cubic-bezier(.2,.8,.2,1) forwards }
+      @keyframes bloomRise{
+        0%{ opacity:0; transform:translate(-50%, 40px) scale(.2) }
+        60%{ opacity:1; transform:translate(-50%, -30px) scale(1.06) }
+        100%{ opacity:1; transform:translate(-50%, -10px) scale(1) }
       }
-      .bloom .petal{ fill:#ff86bf }
-      .bloom .center{ fill:#ffd34d }
-      .bloom .stroke{ fill:none; stroke:#ff4fa0; stroke-width:1.5; opacity:.5 }
+      /* Reduced motion for blooms */
+      @media (prefers-reduced-motion: reduce){
+        .bloom.show{ animation:none; opacity:1; transform:translate(-50%, -10px) scale(1) }
+      }
 
-      /* Reduced motion */
+      /* Soft sparkles */
+      .sparkle{ position:absolute; width:8px; height:8px; border-radius:50%; background:radial-gradient(#fff, #ffd2f1 60%, transparent 70%); opacity:0; }
+      .sparkle.show{ animation:twinkle 1.6s ease-in-out infinite }
+      @keyframes twinkle{
+        0%,100%{ opacity:.0; transform:scale(.6) }
+        50%{ opacity:.9; transform:scale(1) }
+      }
+
+      /* Ground glow */
+      .glow{
+        position:absolute; bottom:2px; left:50%; transform:translateX(-50%);
+        width:200px; height:36px; opacity:0; filter:blur(10px);
+        background:radial-gradient(60% 100% at 50% 50%, rgba(255,134,191,.55), rgba(255,134,191,0) 70%);
+      }
+      .glow.show{ animation:glowPop .9s ease forwards }
+      @keyframes glowPop{
+        0%{ opacity:0; transform:translateX(-50%) scaleX(.6) }
+        100%{ opacity:1; transform:translateX(-50%) scaleX(1) }
+      }
+
+      /* Controls */
+      .controls{
+        position:absolute; left:12px; right:12px; bottom:12px; display:flex; gap:10px; justify-content:center; z-index:3;
+        pointer-events:auto;
+      }
+      .btn{
+        background:#fff; border:2px solid #ffd2ea; color:#d154a7; border-radius:999px; padding:8px 14px; font-weight:700; cursor:pointer;
+        box-shadow:0 6px 12px rgba(0,0,0,.06), inset 0 0 0 1px #fff8;
+      }
+      .btn:active{ transform:translateY(1px) }
+      .btn.music{ border-color:#e3d8ff; color:#7b3ad7 }
+
+      /* Reduced motion — disable big anims */
       @media (prefers-reduced-motion: reduce){
         .heart, .bg-fly, .title, .idle, .walking{ animation: none !important }
-        .bloom.show{ animation:none }
       }
+
       @media (max-width:520px){
-        .card{padding:26px 18px 120px}
+        .card{padding:26px 18px 128px}
         .whispers{padding:0 12px}
         .whispers .left,.whispers .right{font-size:11px}
         .whispers .mid{font-size:9px}
         .boy,.girl{width:96px}
-        .bloom{ --sz:46px }
       }
     </style>
   </head>
   <body>
     <!-- Butterflies -->
-    <div class="butterflies" id="butterflies" aria-hidden="true">
+    <div class="butterflies" aria-hidden="true">
       <div class="butterfly bg-fly bg1"><span></span></div>
       <div class="butterfly bg-fly bg2"><span></span></div>
       <div class="butterfly bg-fly bg3"><span></span></div>
@@ -189,7 +221,7 @@
 
     <!-- Card -->
     <div class="center">
-      <div class="card">
+      <div class="card" id="card">
         <h1 class="title">
           <span class="semangat">Semangat</span>
           <span class="name"> Fadhli<span class="n-target" id="n-target">n</span></span>
@@ -238,25 +270,16 @@
           <rect class="skin" x="36" y="56" width="22" height="6" rx="3"/>
         </svg>
 
-        <!-- BLOOM: bunga kecil -->
-        <svg class="bloom" id="bloom" viewBox="0 0 100 100" aria-hidden="true">
-          <!-- 8 petals -->
-          <g transform="translate(50,50)">
-            <g>
-              <ellipse class="petal" rx="14" ry="28" transform="rotate(0) translate(0,-26)"/>
-              <ellipse class="petal" rx="14" ry="28" transform="rotate(45) translate(0,-26)"/>
-              <ellipse class="petal" rx="14" ry="28" transform="rotate(90) translate(0,-26)"/>
-              <ellipse class="petal" rx="14" ry="28" transform="rotate(135) translate(0,-26)"/>
-              <ellipse class="petal" rx="14" ry="28" transform="rotate(180) translate(0,-26)"/>
-              <ellipse class="petal" rx="14" ry="28" transform="rotate(225) translate(0,-26)"/>
-              <ellipse class="petal" rx="14" ry="28" transform="rotate(270) translate(0,-26)"/>
-              <ellipse class="petal" rx="14" ry="28" transform="rotate(315) translate(0,-26)"/>
-            </g>
-            <circle class="center" r="12"/>
-            <circle class="stroke" r="32"/>
-          </g>
-        </svg>
+        <!-- Bouquet container + glow -->
+        <div class="bouquet" id="bouquet"></div>
+        <div class="glow" id="glow"></div>
       </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button class="btn" id="replayBtn">Replay moment</button>
+      <button class="btn music" id="musicBtn">Music ♫</button>
     </div>
 
     <script>
@@ -292,7 +315,7 @@
       document.addEventListener('visibilitychange', ()=>{ running = !document.hidden; if(running) loop(); });
       addEventListener('pointerdown', (e)=>{
         const xvw = (e.clientX / innerWidth) * 100;
-        for(let i=0;i<14;i++) setTimeout(()=> spawnHeart(xvw), i*35);
+        for(let i=0;i<12;i++) setTimeout(()=> spawnHeart(xvw), i*35);
       }, {passive:true});
 
       /* butterfly landing */
@@ -317,12 +340,14 @@
         requestAnimationFrame(frame);
       }
 
-      /* meet in the middle + bloom */
-      const cardEl = document.querySelector('.card');
+      /* meet in the middle + bouquet */
+      const cardEl = document.getElementById('card');
       const chars = document.getElementById('chars');
       const boy = document.getElementById('boy');
       const girl = document.getElementById('girl');
-      const bloom = document.getElementById('bloom');
+      const bouquet = document.getElementById('bouquet');
+      const glow = document.getElementById('glow');
+      let meetTimer;
 
       function layoutStarts(){
         const cr = chars.getBoundingClientRect();
@@ -331,25 +356,52 @@
         const pad = Math.max(16, innerWidth * 0.06);
         boy.style.left = pad + 'px';
         girl.style.left = (cr.width - girlW - pad) + 'px';
-        // hide bloom when relayout
-        bloom.classList.remove('show');
-        bloom.style.opacity = 0;
+        // reset visuals
+        bouquet.innerHTML = '';
+        glow.classList.remove('show');
+      }
+
+      function createBloom(size=52){
+        const wrap = document.createElement('div');
+        wrap.className = 'bloom';
+        wrap.style.width = size + 'px';
+        wrap.innerHTML = `
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <g transform="translate(50,50)">
+              ${[0,45,90,135,180,225,270,315].map(a=>`<ellipse class="petal" rx="14" ry="28" transform="rotate(${a}) translate(0,-26)"/>`).join('')}
+              <circle class="center" r="12"/>
+            </g>
+          </svg>
+        `;
+        return wrap;
+      }
+
+      function createSparkle(x,y,delay=0){
+        const s = document.createElement('div');
+        s.className = 'sparkle';
+        s.style.left = (x + (Math.random()*80-40)) + 'px';
+        s.style.top  = (y + (Math.random()*30-15)) + 'px';
+        setTimeout(()=> s.classList.add('show'), delay);
+        // auto remove later
+        setTimeout(()=> s.remove(), 5000 + delay);
+        return s;
       }
 
       async function meetInMiddle(){
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
         const cardR = cardEl.getBoundingClientRect();
         const cr = chars.getBoundingClientRect();
         const boyW = boy.getBoundingClientRect().width;
         const girlW = girl.getBoundingClientRect().width;
 
-        // center X of card relative to chars container
         const meetX = cardR.left + cardR.width/2 - cr.left;
-        const gap = Math.max(18, Math.min(40, innerWidth*0.04)); // distance between them
+        const gap = Math.max(18, Math.min(40, innerWidth*0.04));
 
         const boyTargetLeft = Math.round(meetX - gap/2 - boyW);
         const girlTargetLeft = Math.round(meetX + gap/2);
 
-        const dur = 3800;
+        const dur = prefersReduced ? 0 : 3800;
         const timing = {duration: dur, easing: 'cubic-bezier(.25,.8,.25,1)', fill:'forwards'};
 
         boy.classList.remove('idle'); girl.classList.remove('idle');
@@ -365,18 +417,41 @@
         boy.classList.remove('walking'); boy.classList.add('idle');
         girl.classList.remove('walking'); girl.classList.add('idle');
 
-        // position bloom at the meet point & show
-        bloom.style.left = meetX + 'px';
-        bloom.classList.add('show');
+        // position bouquet container & glow
+        bouquet.style.left = '50%'; // already centered
+        glow.style.left = '50%';
+        glow.classList.add('show');
 
-        // sprinkle a few hearts right above bloom
+        // MULTI BLOOM TRAIL
+        const count = 7;
+        for(let i=0;i<count;i++){
+          const b = createBloom(48 + i*2); // slight size variety
+          b.style.left = '50%';
+          bouquet.appendChild(b);
+          setTimeout(()=> b.classList.add('show'), i*140);
+        }
+
+        // gentle chime when first bloom appears
+        setTimeout(()=> playChime(), 120);
+
+        // soft sparkles after blooms settled
+        const bouquetR = bouquet.getBoundingClientRect();
+        const baseX = bouquetR.left + bouquetR.width/2;
+        const baseY = bouquetR.top  + bouquetR.height/2;
+        for(let i=0;i<8;i++){
+          const sp = createSparkle(baseX, baseY, 1800 + i*120);
+          chars.appendChild(sp);
+        }
+
+        // sprinkle a few hearts above bouquet
         const xvw = ((cr.left + meetX) / innerWidth) * 100;
-        for(let i=0;i<6;i++) setTimeout(()=> spawnHeart(xvw), i*80);
+        for(let i=0;i<6;i++) setTimeout(()=> spawnHeart(xvw), 1800 + i*90);
       }
 
       function startMeeting(){
+        clearTimeout(meetTimer);
         layoutStarts();
-        setTimeout(meetInMiddle, 400);
+        meetTimer = setTimeout(meetInMiddle, 400);
       }
 
       window.addEventListener('load', ()=>{
@@ -388,9 +463,116 @@
       window.addEventListener('resize', ()=>{
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(()=>{
-          layoutStarts();
-          setTimeout(meetInMiddle, 200);
+          startMeeting();
         }, 150);
+      });
+
+      // Replay button
+      document.getElementById('replayBtn').addEventListener('click', startMeeting);
+
+      /* ===================== AUDIO (WebAudio ambient + chime) ===================== */
+      let audioCtx = null, musicOn = false;
+      let masterGain, padGain, delayNode, feedbackGain, lfo, lfoGain, padOscs = [];
+      const musicBtn = document.getElementById('musicBtn');
+
+      function ensureAudio(){
+        if(audioCtx) return;
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain(); masterGain.gain.value = 0.25; // overall volume
+        masterGain.connect(audioCtx.destination);
+
+        // Simple stereo-ish delay for space
+        delayNode = audioCtx.createDelay(1.2); delayNode.delayTime.value = 0.38;
+        feedbackGain = audioCtx.createGain(); feedbackGain.gain.value = 0.35;
+        delayNode.connect(feedbackGain); feedbackGain.connect(delayNode);
+
+        padGain = audioCtx.createGain(); padGain.gain.value = 0.0; // faded in later
+        padGain.connect(delayNode); delayNode.connect(masterGain);
+        padGain.connect(masterGain); // dry + wet
+
+        // LFO for subtle vibrato
+        lfo = audioCtx.createOscillator(); lfo.frequency.value = 0.18;
+        lfoGain = audioCtx.createGain(); lfoGain.gain.value = 3; // cents-ish
+        lfo.connect(lfoGain);
+      }
+
+      function startPad(){
+        ensureAudio();
+        if(!audioCtx) return;
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+
+        // build gentle pad (two notes, slight detune) — Cmaj7 ambience
+        const now = audioCtx.currentTime;
+        const notes = [261.63, 329.63, 392.00]; // C E G
+        // clear previous
+        padOscs.forEach(o=> { try{o.stop();o.disconnect();}catch{} });
+        padOscs = [];
+
+        notes.forEach((f,idx)=>{
+          const o = audioCtx.createOscillator();
+          o.type = idx===0 ? 'sine' : (idx===1 ? 'triangle' : 'sine');
+          o.frequency.value = f;
+          const det = audioCtx.createOscillator(); // vibrato per-osc
+          det.frequency.value = 0.13 + Math.random()*0.07;
+          const detGain = audioCtx.createGain(); detGain.gain.value = 2.5 + Math.random()*1.5;
+          det.connect(detGain); detGain.connect(o.frequency);
+          det.start();
+
+          lfoGain.connect(o.frequency); // global slow LFO
+          o.connect(padGain);
+          o.start(now + idx*0.02); // tiny stagger
+          padOscs.push(o);
+        });
+        lfo.start();
+
+        // Fade in
+        padGain.gain.cancelScheduledValues(now);
+        padGain.gain.setValueAtTime(padGain.gain.value, now);
+        padGain.gain.linearRampToValueAtTime(0.22, now + 2.0);
+        musicOn = true; musicBtn.textContent = 'Music ♫ On';
+      }
+
+      function stopPad(){
+        if(!audioCtx) return;
+        const now = audioCtx.currentTime;
+        padGain.gain.cancelScheduledValues(now);
+        padGain.gain.setValueAtTime(padGain.gain.value, now);
+        padGain.gain.linearRampToValueAtTime(0.0, now + 1.2);
+        setTimeout(()=>{
+          padOscs.forEach(o=> { try{o.stop();o.disconnect();}catch{} });
+          padOscs = [];
+        }, 1400);
+        musicOn = false; musicBtn.textContent = 'Music ♫';
+      }
+
+      function playChime(){
+        // short bell-like chime for bloom
+        if(!audioCtx) return; // will be created on first user action or music toggle
+        const now = audioCtx.currentTime;
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'sine'; o.frequency.value = 880; // A5
+        o.connect(g); g.connect(masterGain);
+        g.gain.setValueAtTime(0.0001, now);
+        g.gain.exponentialRampToValueAtTime(0.18, now + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+        o.start(now); o.stop(now + 0.65);
+      }
+
+      musicBtn.addEventListener('click', ()=>{
+        if(!audioCtx || !musicOn){ startPad(); }
+        else{ stopPad(); }
+      });
+
+      // Prepare audio on first user interaction (for autoplay policies)
+      window.addEventListener('pointerdown', ()=>{
+        if(!audioCtx) ensureAudio();
+      }, {once:true});
+
+      /* init */
+      window.addEventListener('load', ()=>{
+        landOnN();
+        startMeeting();
       });
     </script>
   </body>
