@@ -4,111 +4,149 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Semangat Fadhlin</title>
+    <!-- Font yang segar & jelas -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet">
     <style>
       :root{
-        --bg: #fff;
-        --text: #111;
-        --card: #ffffff;
-        --shadow: 0 10px 30px rgba(0,0,0,.12);
-        --pink: #ff5ea8;
+        --bg1:#fff7fb;
+        --bg2:#ffe9f6;
+        --text:#1a1a1a;
+        --card:#ffffff;
+        --shadow:0 12px 30px rgba(0,0,0,.12);
+        --pink:#ff4fa0; /* warna love & accent */
       }
-      html,body{height:100%;margin:0;background:var(--bg);color:var(--text)}
-      body{overflow:hidden;font-family:system-ui,Segoe UI,Arial,sans-serif}
-      .center{
-        position:fixed; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none;
+      *{box-sizing:border-box}
+      html,body{height:100%;margin:0}
+      body{
+        font-family:Poppins,system-ui,Segoe UI,Arial,sans-serif;
+        color:var(--text);
+        background:radial-gradient(80% 80% at 50% 20%, var(--bg2), var(--bg1));
+        overflow:hidden;
       }
-      .card{
-        pointer-events:auto;
-        padding:28px 24px; border-radius:16px; box-shadow:var(--shadow);
-        background:var(--card); text-align:center; max-width:600px; margin:16px;
-      }
-      h1{margin:0 0 8px;font-size:28px}
-      p{margin:0;font-size:15px;opacity:.75}
 
-      /* Hearts container */
+      /* hearts layer */
       .hearts{position:fixed; inset:0; overflow:hidden; pointer-events:none}
-
       .heart{
-        position:absolute; bottom:-24px;
-        font-size:14px; line-height:1; color:var(--pink);
-        filter: drop-shadow(0 6px 10px rgba(255,94,168,.25));
-        opacity:.9; will-change: transform, opacity;
-        animation: floatUp linear forwards;
+        position:absolute; bottom:-24px; color:var(--pink);
+        font-size:16px; opacity:.92;
+        filter:drop-shadow(0 8px 14px rgba(255,79,160,.28));
+        animation:floatUp linear forwards;
+        will-change:transform,opacity;
       }
-
       @keyframes floatUp{
-        0%   { transform: translateY(0) translateX(0) rotate(0deg) scale(1); opacity: .95; }
-        70%  { opacity: .95; }
-        100% { transform: translateY(-110vh) translateX(var(--drift,0)) rotate(360deg) scale(var(--scale,1));
-               opacity: 0; }
+        0%{transform:translateY(0) translateX(0) scale(0.9); opacity:.95}
+        70%{opacity:.95}
+        100%{transform:translateY(-115vh) translateX(var(--drift,0)) scale(var(--scale,1.1)); opacity:0}
       }
 
-      /* Subtle pulsing for the message heart */
-      .pulse{ animation: pulse 1.8s ease-in-out infinite; color: var(--pink); display:inline-block }
-      @keyframes pulse { 0%,100%{ transform:scale(1) } 50%{ transform:scale(1.08) } }
+      /* card tengah */
+      .center{position:fixed; inset:0; display:flex; align-items:center; justify-content:center}
+      .card{
+        background:var(--card);
+        border-radius:18px; box-shadow:var(--shadow);
+        padding:32px 28px; text-align:center; max-width:720px; margin:16px;
+      }
 
-      /* Responsive text sizes */
-      @media (max-width:420px){ h1{font-size:24px} .card{padding:22px 18px} }
+      /* headline styling */
+      .headline{
+        letter-spacing:.5px; margin:0;
+        background:linear-gradient(180deg, #222 0%, #555 100%);
+        -webkit-background-clip:text; background-clip:text; color:transparent;
+        text-shadow:0 1px 0 rgba(0,0,0,.05);
+        font-weight:700; line-height:1.15;
+        opacity:0; transform:translateY(16px);
+        animation:fadeUp .8s ease-out forwards;
+      }
+      .headline.big{font-size:clamp(28px,6vw,54px)}
+      .headline.sub{
+        font-size:clamp(20px,4.5vw,34px);
+        margin-top:8px;
+        animation-delay:.55s; /* muncul selangkah kemudian */
+      }
+
+      /* highlight underline lembut */
+      .accent{
+        position:relative; display:inline-block;
+      }
+      .accent::after{
+        content:""; position:absolute; left:0; right:0; bottom:-6px; height:10px;
+        background:linear-gradient(90deg, rgba(255,79,160,.25), rgba(255,79,160,.05));
+        border-radius:8px; filter:blur(.2px);
+      }
+
+      /* glow halus */
+      .glow{ text-shadow:0 0 12px rgba(255,79,160,.22) }
+
+      /* masa live kecil */
+      #time{margin-top:12px; font-size:14px; opacity:.7}
+
+      @keyframes fadeUp{
+        to{opacity:1; transform:translateY(0)}
+      }
+
+      /* hati di tajuk berdegup */
+      .pulse{display:inline-block; color:var(--pink); animation:pulse 1.7s ease-in-out infinite}
+      @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+
+      @media (max-width:420px){ .card{padding:24px 18px} }
     </style>
   </head>
   <body>
-    <!-- floating hearts layer -->
     <div class="hearts" id="hearts"></div>
 
-    <!-- message card -->
     <div class="center">
       <div class="card">
-        <h1>semangat fadhlin, stay healthy <span class="pulse">❤</span></h1>
-        <p id="time"></p>
+        <h1 class="headline big glow">
+          <span class="accent">Semangat Fadhlin</span> <span class="pulse">❤</span>
+        </h1>
+        <h2 class="headline sub">Be happy</h2>
+        <div id="time"></div>
       </div>
     </div>
 
     <script>
-      // live clock
+      // jam live
       const timeEl = document.getElementById('time');
       const tick = () => timeEl.textContent = new Date().toLocaleString();
       tick(); setInterval(tick, 1000);
 
-      // floating hearts
+      // floating pink hearts
       const container = document.getElementById('hearts');
+      function spawnHeart(){
+        const el = document.createElement('span');
+        el.className = 'heart';
+        el.textContent = '❤'; // warna ikut CSS (pink)
+        const x = Math.random()*100;           // posisi mula (vw)
+        const drift = (Math.random()*140-70)+'px';
+        const scale = (Math.random()*0.9+0.6).toFixed(2);
+        const duration = (Math.random()*4+4).toFixed(2); // 4–8s
 
-      function spawnHeart() {
-        const span = document.createElement('span');
-        span.className = 'heart';
-        span.textContent = '❤'; // pink via CSS
-        // random horizontal start
-        const x = Math.random() * 100; // vw
-        // random drift left/right
-        const drift = (Math.random() * 120 - 60) + 'px';
-        // random size & speed
-        const scale = (Math.random() * 0.8 + 0.6).toFixed(2);
-        const duration = (Math.random() * 4 + 4).toFixed(2); // 4–8s
+        el.style.left = x+'vw';
+        el.style.setProperty('--drift', drift);
+        el.style.setProperty('--scale', scale);
+        el.style.animationDuration = duration+'s';
 
-        span.style.left = x + 'vw';
-        span.style.setProperty('--drift', drift);
-        span.style.setProperty('--scale', scale);
-        span.style.animationDuration = duration + 's';
-
-        container.appendChild(span);
-        span.addEventListener('animationend', () => span.remove());
+        container.appendChild(el);
+        el.addEventListener('animationend', ()=> el.remove());
       }
-
-      // spawn many hearts, but keep it light for mobile
       let running = true;
       function loop(){
         if(!running) return;
-        // burst probability scales with screen width
-        const count = Math.random() < 0.6 ? 1 : 2; // occasionally 2
+        const count = Math.random()<0.65 ? 1 : 2;
         for(let i=0;i<count;i++) spawnHeart();
-        setTimeout(loop, Math.random()*300 + 150); // every 150–450ms
+        setTimeout(loop, Math.random()*300 + 150);
       }
       loop();
-
-      // pause when tab hidden (battery friendly)
-      document.addEventListener('visibilitychange', () => {
+      document.addEventListener('visibilitychange', ()=>{
         running = !document.hidden;
-        if (running) loop();
-      }, false);
+        if(running) loop();
+      });
+    </script>
+  </body>
+</html>
+
     </script>
   </body>
 </html>
