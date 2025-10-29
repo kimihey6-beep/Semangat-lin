@@ -2,43 +2,36 @@
 <html lang="ms">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
     <title>Semangat Fadhlin</title>
-    <!-- Sweet fonts -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Dancing Script (title), Lobster Two (tags), Quicksand (base) -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Lobster+Two:wght@400;700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
       :root{
-        --bg1:#fff7fb;
-        --bg2:#ffe9f6;
-        --text:#141416;
-        --card:#ffffff;
-        --shadow:0 12px 30px rgba(0,0,0,.12);
-        --pink:#ff4fa0;          /* tajuk + hearts + 'or' */
-        --pink-soft:#ff86bf;     /* subheadline & accent */
+        --bg1:#fff7fb; --bg2:#ffe9f6;
+        --text:#141416; --card:#ffffff; --shadow:0 12px 30px rgba(0,0,0,.12);
+        --pink:#ff4fa0; --pink-soft:#ff86bf;
         --muted:#6a6a6a;
-        --purple:#9b5de5;        /* rama-rama */
-        --purple-dark:#7b3ad7;
+        --purple:#9b5de5; --purple-dark:#7b3ad7;
       }
       *{box-sizing:border-box}
       html,body{height:100%;margin:0}
       body{
         font-family:Quicksand, system-ui, Segoe UI, Arial, sans-serif;
         background:radial-gradient(80% 80% at 50% 20%, var(--bg2), var(--bg1));
-        color:var(--text);
-        overflow:hidden;
-        -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+        color:var(--text); overflow:hidden; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
       }
 
-      /* layers: butterflies (6) > hearts (4) > card (3) > scene (1) */
+      /* layers */
       .butterflies{position:fixed; inset:0; pointer-events:none; z-index:6}
       .hearts{position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:4}
 
-      /* hearts (pink) */
+      /* hearts */
       .heart{
-        position:absolute; bottom:-24px; color:var(--pink);
-        font-size:16px; opacity:.95;
+        position:absolute; bottom:-24px; color:var(--pink); font-size:16px; opacity:.95;
         filter:drop-shadow(0 8px 14px rgba(255,79,160,.28));
         animation:floatUp linear forwards; will-change:transform,opacity;
       }
@@ -50,43 +43,45 @@
 
       .center{position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:3}
       .card{
-        background:var(--card);
-        border-radius:20px; box-shadow:var(--shadow);
-        padding:34px 30px 110px; /* ruang bawah untuk scene */
-        text-align:center; max-width:760px; margin:16px; position:relative;
+        background:var(--card); border-radius:20px; box-shadow:var(--shadow);
+        padding:34px 30px 110px; text-align:center; max-width:760px; margin:16px; position:relative;
       }
 
-      /* Tajuk pink + animasi manis */
+      /* Title */
       .title{
-        font-family:"Dancing Script", cursive;
-        font-weight:700; font-size:clamp(36px,7.2vw,68px);
-        margin:0; color:var(--pink); letter-spacing:.4px;
-        text-shadow:0 2px 0 rgba(0,0,0,.05), 0 0 18px rgba(255,79,160,.25);
+        font-family:"Dancing Script", cursive; font-weight:700; font-size:clamp(36px,7.2vw,68px);
+        margin:0; letter-spacing:.4px; text-shadow:0 2px 0 rgba(0,0,0,.05);
         transform:translateY(14px) scale(.96); opacity:0;
-        animation:popIn .9s cubic-bezier(.2,.7,.2,1) .05s forwards,
-                 gentleFloat 6s ease-in-out 1.2s infinite;
+        animation:popIn .9s cubic-bezier(.2,.7,.2,1) .05s forwards, gentleFloat 6s ease-in-out 1.2s infinite;
       }
-      .title .n-target{ position:relative } /* anchor huruf 'n' */
-      @keyframes popIn{
-        0%{opacity:0; transform:translateY(18px) scale(.92)}
-        60%{opacity:1; transform:translateY(-2px) scale(1.03)}
-        100%{opacity:1; transform:translateY(0) scale(1)}
+      .title .semangat{
+        background:linear-gradient(180deg, var(--pink) 0%, var(--pink-soft) 100%);
+        -webkit-background-clip:text; background-clip:text; color:transparent;
+        text-shadow:0 0 18px rgba(255,79,160,.25);
       }
+      .title .name{ color:var(--purple); text-shadow:0 0 18px rgba(123,58,215,.22) }
+      .title .n-target{ position:relative } /* anchor rama-rama */
+
+      @keyframes popIn{ 0%{opacity:0; transform:translateY(18px) scale(.92)} 60%{opacity:1; transform:translateY(-2px) scale(1.03)} 100%{opacity:1; transform:translateY(0) scale(1)} }
       @keyframes gentleFloat{ 0%,100%{ transform:translateY(0) scale(1) } 50%{ transform:translateY(-3px) scale(1.01) } }
 
-      .sub{
-        margin:10px 0 0; font-weight:700;
-        font-size:clamp(20px,4.6vw,36px);
-        color:var(--pink-soft);
-        text-shadow:0 0 1px rgba(255,134,191,.32);
-        opacity:0; transform:translateY(10px);
-        animation:fadeUp .6s ease-out .45s forwards;
+      /* Fancy tags row */
+      .tags{
+        margin:10px 0 0; display:flex; gap:12px; justify-content:center; align-items:center; flex-wrap:wrap;
+        opacity:0; transform:translateY(10px); animation:fadeUp .6s ease-out .45s forwards;
       }
+      .tag{
+        font-family:"Lobster Two", cursive; font-weight:700;
+        font-size:clamp(18px,4.4vw,32px); line-height:1;
+        padding:6px 12px; border-radius:999px; background:#fff; border:2px solid #ffd2ea; color:#d154a7;
+        box-shadow:0 6px 12px rgba(0,0,0,.06), inset 0 0 0 1px #fff8;
+      }
+      .tag.energy{ border-color:#e3d8ff; color:#7b3ad7 }
       @keyframes fadeUp{ to{opacity:1; transform:translateY(0)} }
 
       #time{margin-top:12px; font-size:14px; opacity:.7}
 
-      /* Kiri—tengah—kanan */
+      /* footer whispers */
       .whispers{
         position:absolute; left:0; right:0; bottom:12px;
         display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
@@ -96,37 +91,33 @@
       .whispers .left{text-align:left} .whispers .right{text-align:right}
       .whispers .mid{ text-align:center; color:var(--pink); font-weight:700; font-size:10px; opacity:.95 }
 
-      /* ===== Scene: budak lelaki & perempuan (statik idle) ===== */
+      /* Scene di bawah kad */
       .scene{ position:fixed; left:0; right:0; bottom:0; height:40vh; pointer-events:none; z-index:1 }
       .ground{
         position:absolute; left:0; right:0; bottom:0; height:26vh;
         background:linear-gradient(180deg, transparent 0%, rgba(0,0,0,.05) 60%, rgba(0,0,0,.08) 100%);
         mask: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0));
       }
+
+      /* --- CHARACTERS: absolute so we can walk to center under the card --- */
       .chars{
-        position:absolute; left:6vw; right:6vw; bottom:4vh;
-        display:flex; align-items:flex-end; justify-content:space-between;
+        position:absolute; left:6vw; right:6vw; bottom:4vh; top:auto; height:calc(26vh - 4vh);
       }
+      .boy, .girl { position:absolute; bottom:0; width:120px; max-width:28vw; }
+      .boy{ left:0 } .girl{ right:0 }
 
       svg{ display:block }
-      .skin{ fill:#ffd9c9 }
-      .hair{ fill:#3a2d24 }
-      .shirt{ fill:#3b82f6 }
-      .pants{ fill:#111827 }
-      .shoe{ fill:#4b5563 }
-      .dress{ fill:#ef476f }
+      .skin{ fill:#ffd9c9 } .hair{ fill:#3a2d24 } .shirt{ fill:#3b82f6 } .pants{ fill:#111827 } .shoe{ fill:#4b5563 } .dress{ fill:#ef476f }
 
-      /* idle kecil */
-      .boy, .girl { width:120px; max-width:28vw }
-      .boy{ animation:idleBoy 4s ease-in-out infinite }
-      .girl{ animation:idleGirl 4s ease-in-out infinite }
-      @keyframes idleBoy{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-2px)} }
-      @keyframes idleGirl{ 0%,100%{transform:translateY(0) rotate(0)} 50%{transform:translateY(-2px) rotate(-1deg)} }
+      /* idle vs walking bob */
+      @keyframes idleBob{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-2px)} }
+      @keyframes walkBob{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+      .idle{ animation:idleBob 4s ease-in-out infinite }
+      .walking{ animation:walkBob .9s ease-in-out infinite }
 
-      /* ===== Butterflies ===== */
+      /* Butterflies */
       .butterfly{
-        position:absolute; top:60vh; left:-10vw; width:22px; height:16px; opacity:.95;
-        will-change: transform;
+        position:absolute; top:60vh; left:-10vw; width:22px; height:16px; opacity:.95; will-change: transform;
       }
       .butterfly::before, .butterfly::after{
         content:""; position:absolute; top:0; width:12px; height:16px; border-radius:12px;
@@ -136,15 +127,9 @@
       .butterfly::before{ left:0; transform-origin:right center; animation:wingL var(--wingSpeed,.5s) ease-in-out infinite }
       .butterfly::after { right:0; transform-origin:left center;  animation:wingR var(--wingSpeed,.5s) ease-in-out infinite }
       .butterfly span{ position:absolute; left:9px; top:6px; width:4px; height:6px; background:var(--purple-dark); border-radius:2px }
-
       @keyframes wingL{ 0%,100%{transform:rotate(18deg)} 50%{transform:rotate(2deg)} }
       @keyframes wingR{ 0%,100%{transform:rotate(-18deg)} 50%{transform:rotate(-2deg)} }
-
-      /* generic flight paths for background butterflies (atas teks) */
-      @keyframes fly{
-        0%{ transform:translate(-10vw, 0) }
-        100%{ transform:translate(120vw, -40vh) }
-      }
+      @keyframes fly{ 0%{ transform:translate(-10vw, 0) } 100%{ transform:translate(120vw, -40vh) } }
       .bg-fly{ animation:fly linear infinite }
       .bg1{ top:68vh; animation-duration:16s; animation-delay:.2s }
       .bg2{ top:62vh; animation-duration:18s; animation-delay:1.2s }
@@ -152,46 +137,72 @@
       .bg4{ top:64vh; animation-duration:17s; animation-delay:3.1s }
       .bg5{ top:58vh; animation-duration:19s; animation-delay:4.0s }
       .bg6{ top:66vh; animation-duration:21s; animation-delay:4.8s }
-
-      /* landing butterfly (yang hinggap di 'n') */
       .lander{ transition: transform .25s ease-out }
 
+      /* --- BLOOM (bunga kecil) --- */
+      .bloom{
+        position:absolute; bottom:10px; left:50%;
+        width:var(--sz,56px); aspect-ratio:1;
+        transform:translateX(-50%) scale(.4); opacity:0;
+        filter:drop-shadow(0 6px 12px rgba(255,79,160,.25));
+        pointer-events:none; z-index:0;
+      }
+      .bloom.show{ animation:bloomIn .8s cubic-bezier(.2,.8,.2,1) forwards }
+      @keyframes bloomIn{
+        0%{ transform:translateX(-50%) scale(.2); opacity:0 }
+        60%{ transform:translateX(-50%) scale(1.08); opacity:1 }
+        100%{ transform:translateX(-50%) scale(1); opacity:1 }
+      }
+      .bloom .petal{ fill:#ff86bf }
+      .bloom .center{ fill:#ffd34d }
+      .bloom .stroke{ fill:none; stroke:#ff4fa0; stroke-width:1.5; opacity:.5 }
+
+      /* Reduced motion */
+      @media (prefers-reduced-motion: reduce){
+        .heart, .bg-fly, .title, .idle, .walking{ animation: none !important }
+        .bloom.show{ animation:none }
+      }
       @media (max-width:520px){
         .card{padding:26px 18px 120px}
         .whispers{padding:0 12px}
         .whispers .left,.whispers .right{font-size:11px}
         .whispers .mid{font-size:9px}
         .boy,.girl{width:96px}
+        .bloom{ --sz:46px }
       }
     </style>
   </head>
   <body>
-    <!-- Rama-rama ungu DI ATAS teks -->
+    <!-- Butterflies -->
     <div class="butterflies" id="butterflies" aria-hidden="true">
-      <!-- background flyers -->
       <div class="butterfly bg-fly bg1"><span></span></div>
       <div class="butterfly bg-fly bg2"><span></span></div>
       <div class="butterfly bg-fly bg3"><span></span></div>
       <div class="butterfly bg-fly bg4"><span></span></div>
       <div class="butterfly bg-fly bg5"><span></span></div>
       <div class="butterfly bg-fly bg6"><span></span></div>
-      <!-- landing butterfly (ke huruf 'n') -->
       <div class="butterfly lander" id="landing-butterfly" style="--wingSpeed:.45s"><span></span></div>
     </div>
 
-    <!-- hearts pink (depan teks) -->
-    <div class="hearts" id="hearts"></div>
+    <!-- Hearts -->
+    <div class="hearts" id="hearts" aria-hidden="true"></div>
 
-    <!-- kad mesej -->
+    <!-- Card -->
     <div class="center">
       <div class="card">
-        <!-- Balut huruf 'n' terakhir sebagai anchor pendaratan -->
-        <h1 class="title">Semangat Fadhli<span class="n-target" id="n-target">n</span></h1>
-        <h2 class="sub">Be happy</h2>
-        <div id="time"></div>
+        <h1 class="title">
+          <span class="semangat">Semangat</span>
+          <span class="name"> Fadhli<span class="n-target" id="n-target">n</span></span>
+        </h1>
 
-        <!-- Susunan: kiri — tengah — kanan -->
-        <div class="whispers">
+        <div class="tags">
+          <span class="tag happy">Be happy</span>
+          <span class="tag energy">Be energetic</span>
+        </div>
+
+        <div id="time" aria-live="polite"></div>
+
+        <div class="whispers" aria-hidden="true">
           <span class="left">One day, you will find your happiness.</span>
           <span class="mid">or</span>
           <span class="right">I can be your happiness.</span>
@@ -199,58 +210,67 @@
       </div>
     </div>
 
-    <!-- Scene: mereka statik idle -->
+    <!-- Scene -->
     <div class="scene" aria-hidden="true">
       <div class="ground"></div>
-      <div class="chars">
-        <!-- BOY (SVG ringkas) -->
-        <svg class="boy" viewBox="0 0 120 140">
-          <!-- kepala -->
+      <div class="chars" id="chars">
+        <!-- BOY -->
+        <svg class="boy idle" id="boy" viewBox="0 0 120 140" role="img" aria-label="boy">
           <circle class="skin" cx="60" cy="24" r="14"/>
           <path class="hair" d="M46 24c3-9 25-12 30 0 0 8-8 6-15 6s-15 2-15-6z"/>
-          <!-- badan -->
           <rect class="shirt" x="42" y="38" width="36" height="34" rx="8"/>
-          <!-- kaki -->
           <rect class="pants" x="46" y="72" width="10" height="28" rx="4"/>
           <rect class="pants" x="64" y="72" width="10" height="28" rx="4"/>
           <rect class="shoe" x="43" y="100" width="18" height="6" rx="3"/>
           <rect class="shoe" x="61" y="100" width="18" height="6" rx="3"/>
-          <!-- tangan -->
           <rect class="skin" x="38" y="48" width="10" height="6" rx="3" />
           <rect class="skin" x="78" y="48" width="10" height="6" rx="3" />
         </svg>
-
-        <!-- GIRL (SVG ringkas) -->
-        <svg class="girl" viewBox="0 0 120 140">
-          <!-- kepala -->
+        <!-- GIRL -->
+        <svg class="girl idle" id="girl" viewBox="0 0 120 140" role="img" aria-label="girl">
           <circle class="skin" cx="60" cy="24" r="14"/>
           <path class="hair" d="M45 20c8-10 28-8 32 6 2 8-2 18-6 20-6 4-22 4-26-2-4-5-4-14 0-24z"/>
-          <!-- badan (dress) -->
           <path class="dress" d="M40 38 h40 v36 c0 0 -10 10 -20 10 s-20-10 -20-10z" />
-          <!-- kaki -->
           <rect class="skin" x="50" y="84" width="10" height="22" rx="4"/>
           <rect class="skin" x="60" y="84" width="10" height="22" rx="4"/>
           <rect class="shoe" x="48" y="106" width="16" height="6" rx="3"/>
           <rect class="shoe" x="60" y="106" width="16" height="6" rx="3"/>
-          <!-- tangan -->
           <rect class="skin" x="36" y="56" width="22" height="6" rx="3"/>
+        </svg>
+
+        <!-- BLOOM: bunga kecil -->
+        <svg class="bloom" id="bloom" viewBox="0 0 100 100" aria-hidden="true">
+          <!-- 8 petals -->
+          <g transform="translate(50,50)">
+            <g>
+              <ellipse class="petal" rx="14" ry="28" transform="rotate(0) translate(0,-26)"/>
+              <ellipse class="petal" rx="14" ry="28" transform="rotate(45) translate(0,-26)"/>
+              <ellipse class="petal" rx="14" ry="28" transform="rotate(90) translate(0,-26)"/>
+              <ellipse class="petal" rx="14" ry="28" transform="rotate(135) translate(0,-26)"/>
+              <ellipse class="petal" rx="14" ry="28" transform="rotate(180) translate(0,-26)"/>
+              <ellipse class="petal" rx="14" ry="28" transform="rotate(225) translate(0,-26)"/>
+              <ellipse class="petal" rx="14" ry="28" transform="rotate(270) translate(0,-26)"/>
+              <ellipse class="petal" rx="14" ry="28" transform="rotate(315) translate(0,-26)"/>
+            </g>
+            <circle class="center" r="12"/>
+            <circle class="stroke" r="32"/>
+          </g>
         </svg>
       </div>
     </div>
 
     <script>
-      /* ===== Jam live ===== */
+      /* clock */
       const timeEl = document.getElementById('time');
       const tick = () => timeEl.textContent = new Date().toLocaleString();
       tick(); setInterval(tick, 1000);
 
-      /* ===== Hearts pink ===== */
+      /* hearts */
       const heartLayer = document.getElementById('hearts');
-      function spawnHeart(){
+      function spawnHeart(xvw){
         const el = document.createElement('span');
-        el.className = 'heart';
-        el.textContent = '❤';
-        const x = Math.random()*100;
+        el.className = 'heart'; el.textContent = '❤';
+        const x = xvw ?? Math.random()*100;
         const drift = (Math.random()*140-70)+'px';
         const scale = (Math.random()*0.9+0.6).toFixed(2);
         const duration = (Math.random()*4+4).toFixed(2);
@@ -269,50 +289,109 @@
         setTimeout(loop, Math.random()*300 + 150);
       }
       loop();
-      document.addEventListener('visibilitychange', ()=>{
-        running = !document.hidden;
-        if(running) loop();
-      });
+      document.addEventListener('visibilitychange', ()=>{ running = !document.hidden; if(running) loop(); });
+      addEventListener('pointerdown', (e)=>{
+        const xvw = (e.clientX / innerWidth) * 100;
+        for(let i=0;i<14;i++) setTimeout(()=> spawnHeart(xvw), i*35);
+      }, {passive:true});
 
-      /* ===== Butterflies: flyers + 1 landing on 'n' ===== */
+      /* butterfly landing */
       const nTarget = document.getElementById('n-target');
       const lander = document.getElementById('landing-butterfly');
-
       function landOnN(){
         const r = nTarget.getBoundingClientRect();
-        const targetX = r.left + r.width*0.6;  // atas sedikit di hujung 'n'
+        const targetX = r.left + r.width*0.6;
         const targetY = r.top  - 10;
-        const startX = -60;
-        const startY = window.innerHeight*0.7;
-
-        const t0 = performance.now();
-        const duration = 5500;
+        const startX = -60, startY = innerHeight*0.7;
+        const t0 = performance.now(), duration = 5500;
         const easeInOut = t => t<.5 ? 2*t*t : -1+(4-2*t)*t;
-
         function frame(now){
-          const p = Math.min(1, (now - t0)/duration);
-          const e = easeInOut(p);
-
-          const midX = (startX + targetX)/2 + 120;
-          const midY = (startY + targetY)/2 - 120;
+          const p = Math.min(1, (now - t0)/duration), e = easeInOut(p);
+          const midX = (startX + targetX)/2 + 120, midY = (startY + targetY)/2 - 120;
           const x = (1-e)*(1-e)*startX + 2*(1-e)*e*midX + e*e*targetX;
           const y = (1-e)*(1-e)*startY + 2*(1-e)*e*midY + e*e*targetY;
-
           lander.style.transform = `translate(${x}px, ${y}px)`;
-          if(p < 1){ requestAnimationFrame(frame); }
-          else{ lander.style.setProperty('--wingSpeed','.9s'); }
+          if(p < 1) requestAnimationFrame(frame); else lander.style.setProperty('--wingSpeed','.9s');
         }
         lander.style.transform = `translate(${startX}px, ${startY}px)`;
         requestAnimationFrame(frame);
       }
-      window.addEventListener('load', ()=> setTimeout(landOnN, 900));
-    </script>
-  </body>
-</html>
 
+      /* meet in the middle + bloom */
+      const cardEl = document.querySelector('.card');
+      const chars = document.getElementById('chars');
+      const boy = document.getElementById('boy');
+      const girl = document.getElementById('girl');
+      const bloom = document.getElementById('bloom');
 
+      function layoutStarts(){
+        const cr = chars.getBoundingClientRect();
+        const boyW = boy.getBoundingClientRect().width;
+        const girlW = girl.getBoundingClientRect().width;
+        const pad = Math.max(16, innerWidth * 0.06);
+        boy.style.left = pad + 'px';
+        girl.style.left = (cr.width - girlW - pad) + 'px';
+        // hide bloom when relayout
+        bloom.classList.remove('show');
+        bloom.style.opacity = 0;
+      }
 
+      async function meetInMiddle(){
+        const cardR = cardEl.getBoundingClientRect();
+        const cr = chars.getBoundingClientRect();
+        const boyW = boy.getBoundingClientRect().width;
+        const girlW = girl.getBoundingClientRect().width;
 
+        // center X of card relative to chars container
+        const meetX = cardR.left + cardR.width/2 - cr.left;
+        const gap = Math.max(18, Math.min(40, innerWidth*0.04)); // distance between them
+
+        const boyTargetLeft = Math.round(meetX - gap/2 - boyW);
+        const girlTargetLeft = Math.round(meetX + gap/2);
+
+        const dur = 3800;
+        const timing = {duration: dur, easing: 'cubic-bezier(.25,.8,.25,1)', fill:'forwards'};
+
+        boy.classList.remove('idle'); girl.classList.remove('idle');
+        boy.classList.add('walking'); girl.classList.add('walking');
+
+        const boyAnim = boy.animate([{ left: boy.style.left }, { left: boyTargetLeft + 'px' }], timing);
+        const girlAnim = girl.animate([{ left: girl.style.left }, { left: girlTargetLeft + 'px' }], timing);
+
+        await Promise.all([boyAnim.finished, girlAnim.finished]);
+
+        boy.style.left = boyTargetLeft + 'px';
+        girl.style.left = girlTargetLeft + 'px';
+        boy.classList.remove('walking'); boy.classList.add('idle');
+        girl.classList.remove('walking'); girl.classList.add('idle');
+
+        // position bloom at the meet point & show
+        bloom.style.left = meetX + 'px';
+        bloom.classList.add('show');
+
+        // sprinkle a few hearts right above bloom
+        const xvw = ((cr.left + meetX) / innerWidth) * 100;
+        for(let i=0;i<6;i++) setTimeout(()=> spawnHeart(xvw), i*80);
+      }
+
+      function startMeeting(){
+        layoutStarts();
+        setTimeout(meetInMiddle, 400);
+      }
+
+      window.addEventListener('load', ()=>{
+        landOnN();
+        startMeeting();
+      });
+
+      let resizeTimer;
+      window.addEventListener('resize', ()=>{
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(()=>{
+          layoutStarts();
+          setTimeout(meetInMiddle, 200);
+        }, 150);
+      });
     </script>
   </body>
 </html>
