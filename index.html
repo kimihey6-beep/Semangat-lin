@@ -61,7 +61,7 @@
         text-shadow:0 0 18px rgba(255,79,160,.25);
       }
       .title .name{ color:var(--purple); text-shadow:0 0 18px rgba(123,58,215,.22) }
-      .title .n-target{ position:relative } /* anchor rama-rama */
+      .title .n-target{ position:relative }
 
       @keyframes popIn{ 0%{opacity:0; transform:translateY(18px) scale(.92)} 60%{opacity:1; transform:translateY(-2px) scale(1.03)} 100%{opacity:1; transform:translateY(0) scale(1)} }
       @keyframes gentleFloat{ 0%,100%{ transform:translateY(0) scale(1) } 50%{ transform:translateY(-3px) scale(1.01) } }
@@ -138,8 +138,8 @@
       .bg6{ top:66vh; animation-duration:21s; animation-delay:4.8s }
       .lander{ transition: transform .25s ease-out }
 
-      /* --- BLOOMS BOUQUET --- */
-      .bouquet{ position:absolute; bottom:16px; left:50%; transform:translateX(-50%); pointer-events:none; }
+      /* --- BLOOMS BOUQUET (naik & park lebih tinggi) --- */
+      .bouquet{ position:absolute; bottom:40px; left:50%; transform:translateX(-50%); pointer-events:none; }
       .bloom{
         position:absolute; left:0; top:0; width:52px; aspect-ratio:1; opacity:0;
         transform:translate(-50%, 40px) scale(.3);
@@ -147,15 +147,14 @@
       }
       .bloom svg{ width:100%; height:100% }
       .bloom .petal{ fill:#ff86bf } .bloom .center{ fill:var(--gold) }
-      .bloom.show{ animation:bloomRise .9s cubic-bezier(.2,.8,.2,1) forwards }
+      .bloom.show{ animation:bloomRise 1.1s cubic-bezier(.2,.8,.2,1) forwards }
       @keyframes bloomRise{
-        0%{ opacity:0; transform:translate(-50%, 40px) scale(.2) }
-        60%{ opacity:1; transform:translate(-50%, -30px) scale(1.06) }
-        100%{ opacity:1; transform:translate(-50%, -10px) scale(1) }
+        0%  { opacity:0; transform:translate(-50%, 40px)  scale(.2)  }
+        60% { opacity:1; transform:translate(-50%, -80px) scale(1.06) }
+        100%{ opacity:1; transform:translate(-50%, -50px) scale(1)    }
       }
-      /* Reduced motion for blooms */
       @media (prefers-reduced-motion: reduce){
-        .bloom.show{ animation:none; opacity:1; transform:translate(-50%, -10px) scale(1) }
+        .bloom.show{ animation:none; opacity:1; transform:translate(-50%, -50px) scale(1) }
       }
 
       /* Soft sparkles */
@@ -169,7 +168,7 @@
       /* Ground glow */
       .glow{
         position:absolute; bottom:2px; left:50%; transform:translateX(-50%);
-        width:200px; height:36px; opacity:0; filter:blur(10px);
+        width:220px; height:40px; opacity:0; filter:blur(10px);
         background:radial-gradient(60% 100% at 50% 50%, rgba(255,134,191,.55), rgba(255,134,191,0) 70%);
       }
       .glow.show{ animation:glowPop .9s ease forwards }
@@ -382,7 +381,6 @@
         s.style.left = (x + (Math.random()*80-40)) + 'px';
         s.style.top  = (y + (Math.random()*30-15)) + 'px';
         setTimeout(()=> s.classList.add('show'), delay);
-        // auto remove later
         setTimeout(()=> s.remove(), 5000 + delay);
         return s;
       }
@@ -418,34 +416,36 @@
         girl.classList.remove('walking'); girl.classList.add('idle');
 
         // position bouquet container & glow
-        bouquet.style.left = '50%'; // already centered
+        bouquet.style.left = '50%';
         glow.style.left = '50%';
         glow.classList.add('show');
 
-        // MULTI BLOOM TRAIL
+        // MULTI BLOOM TRAIL (0.5s stagger)
         const count = 7;
+        const stagger = 500; // ms
         for(let i=0;i<count;i++){
-          const b = createBloom(48 + i*2); // slight size variety
+          const b = createBloom(48 + i*2);
           b.style.left = '50%';
           bouquet.appendChild(b);
-          setTimeout(()=> b.classList.add('show'), i*140);
+          setTimeout(()=> b.classList.add('show'), i*stagger);
         }
 
-        // gentle chime when first bloom appears
-        setTimeout(()=> playChime(), 120);
+        // chime kecil masa bunga pertama
+        setTimeout(()=> playClick(), 100);
 
-        // soft sparkles after blooms settled
+        // soft sparkles selepas semua bloom settle
+        const afterAll = count * stagger + 800;
         const bouquetR = bouquet.getBoundingClientRect();
         const baseX = bouquetR.left + bouquetR.width/2;
         const baseY = bouquetR.top  + bouquetR.height/2;
         for(let i=0;i<8;i++){
-          const sp = createSparkle(baseX, baseY, 1800 + i*120);
+          const sp = createSparkle(baseX, baseY, afterAll + i*120);
           chars.appendChild(sp);
         }
 
         // sprinkle a few hearts above bouquet
         const xvw = ((cr.left + meetX) / innerWidth) * 100;
-        for(let i=0;i<6;i++) setTimeout(()=> spawnHeart(xvw), 1800 + i*90);
+        for(let i=0;i<6;i++) setTimeout(()=> spawnHeart(xvw), afterAll + i*90);
       }
 
       function startMeeting(){
@@ -462,112 +462,195 @@
       let resizeTimer;
       window.addEventListener('resize', ()=>{
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(()=>{
-          startMeeting();
-        }, 150);
+        resizeTimer = setTimeout(()=>{ startMeeting(); }, 150);
       });
 
       // Replay button
       document.getElementById('replayBtn').addEventListener('click', startMeeting);
 
-      /* ===================== AUDIO (WebAudio ambient + chime) ===================== */
-      let audioCtx = null, musicOn = false;
-      let masterGain, padGain, delayNode, feedbackGain, lfo, lfoGain, padOscs = [];
+      /* ===================== FUN MUSIC (WebAudio) ===================== */
+      // Beat + plucky arpeggio (ringan & ceria). Toggle dengan Music ♫
+      let audioCtx = null, masterGain, comp, musicOn = false;
+      let seqTimer = null, tempo = 100; // BPM
       const musicBtn = document.getElementById('musicBtn');
 
       function ensureAudio(){
         if(audioCtx) return;
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        masterGain = audioCtx.createGain(); masterGain.gain.value = 0.25; // overall volume
+
+        // master chain: compressor -> master gain -> destination
+        comp = audioCtx.createDynamicsCompressor();
+        comp.threshold.value = -24;
+        comp.knee.value = 20;
+        comp.ratio.value = 3;
+        comp.attack.value = 0.003;
+        comp.release.value = 0.25;
+
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.22;
+
+        comp.connect(masterGain);
         masterGain.connect(audioCtx.destination);
-
-        // Simple stereo-ish delay for space
-        delayNode = audioCtx.createDelay(1.2); delayNode.delayTime.value = 0.38;
-        feedbackGain = audioCtx.createGain(); feedbackGain.gain.value = 0.35;
-        delayNode.connect(feedbackGain); feedbackGain.connect(delayNode);
-
-        padGain = audioCtx.createGain(); padGain.gain.value = 0.0; // faded in later
-        padGain.connect(delayNode); delayNode.connect(masterGain);
-        padGain.connect(masterGain); // dry + wet
-
-        // LFO for subtle vibrato
-        lfo = audioCtx.createOscillator(); lfo.frequency.value = 0.18;
-        lfoGain = audioCtx.createGain(); lfoGain.gain.value = 3; // cents-ish
-        lfo.connect(lfoGain);
       }
 
-      function startPad(){
-        ensureAudio();
-        if(!audioCtx) return;
-        if(audioCtx.state === 'suspended') audioCtx.resume();
-
-        // build gentle pad (two notes, slight detune) — Cmaj7 ambience
+      function envADSR(destination, attack=0.01, decay=0.12, sustain=0.4, release=0.15, peak=0.9, susLevel=0.25){
+        const g = audioCtx.createGain();
+        g.gain.value = 0;
+        g.connect(destination);
         const now = audioCtx.currentTime;
-        const notes = [261.63, 329.63, 392.00]; // C E G
-        // clear previous
-        padOscs.forEach(o=> { try{o.stop();o.disconnect();}catch{} });
-        padOscs = [];
-
-        notes.forEach((f,idx)=>{
-          const o = audioCtx.createOscillator();
-          o.type = idx===0 ? 'sine' : (idx===1 ? 'triangle' : 'sine');
-          o.frequency.value = f;
-          const det = audioCtx.createOscillator(); // vibrato per-osc
-          det.frequency.value = 0.13 + Math.random()*0.07;
-          const detGain = audioCtx.createGain(); detGain.gain.value = 2.5 + Math.random()*1.5;
-          det.connect(detGain); detGain.connect(o.frequency);
-          det.start();
-
-          lfoGain.connect(o.frequency); // global slow LFO
-          o.connect(padGain);
-          o.start(now + idx*0.02); // tiny stagger
-          padOscs.push(o);
-        });
-        lfo.start();
-
-        // Fade in
-        padGain.gain.cancelScheduledValues(now);
-        padGain.gain.setValueAtTime(padGain.gain.value, now);
-        padGain.gain.linearRampToValueAtTime(0.22, now + 2.0);
-        musicOn = true; musicBtn.textContent = 'Music ♫ On';
+        g.gain.cancelScheduledValues(now);
+        g.gain.setValueAtTime(0.0001, now);
+        g.gain.linearRampToValueAtTime(peak, now + attack);
+        g.gain.linearRampToValueAtTime(susLevel, now + attack + decay);
+        return {
+          node: g,
+          release: (when=audioCtx.currentTime)=> {
+            g.gain.cancelScheduledValues(when);
+            g.gain.setTargetAtTime(0.0001, when, release);
+            setTimeout(()=> g.disconnect(), 1000);
+          }
+        };
       }
 
-      function stopPad(){
-        if(!audioCtx) return;
-        const now = audioCtx.currentTime;
-        padGain.gain.cancelScheduledValues(now);
-        padGain.gain.setValueAtTime(padGain.gain.value, now);
-        padGain.gain.linearRampToValueAtTime(0.0, now + 1.2);
-        setTimeout(()=>{
-          padOscs.forEach(o=> { try{o.stop();o.disconnect();}catch{} });
-          padOscs = [];
-        }, 1400);
-        musicOn = false; musicBtn.textContent = 'Music ♫';
-      }
-
-      function playChime(){
-        // short bell-like chime for bloom
-        if(!audioCtx) return; // will be created on first user action or music toggle
-        const now = audioCtx.currentTime;
+      function playKick(time){
+        // short sine drop
         const o = audioCtx.createOscillator();
         const g = audioCtx.createGain();
-        o.type = 'sine'; o.frequency.value = 880; // A5
-        o.connect(g); g.connect(masterGain);
-        g.gain.setValueAtTime(0.0001, now);
-        g.gain.exponentialRampToValueAtTime(0.18, now + 0.01);
-        g.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
-        o.start(now); o.stop(now + 0.65);
+        o.type = 'sine';
+        o.frequency.setValueAtTime(100, time);
+        o.frequency.exponentialRampToValueAtTime(50, time + 0.08);
+        g.gain.setValueAtTime(0.9, time);
+        g.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+        o.connect(g); g.connect(comp);
+        o.start(time); o.stop(time + 0.15);
+      }
+      function playSnare(time){
+        // noise + high sine
+        const bufferSize = audioCtx.sampleRate * 0.08;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i=0;i<bufferSize;i++) data[i] = (Math.random()*2-1) * (1 - i/bufferSize); // decay
+        const noise = audioCtx.createBufferSource(); noise.buffer = buffer;
+
+        const ng = audioCtx.createGain(); ng.gain.value = 0.18;
+        const bp = audioCtx.createBiquadFilter(); bp.type = 'highpass'; bp.frequency.value = 1800;
+
+        noise.connect(bp); bp.connect(ng); ng.connect(comp);
+        noise.start(time); noise.stop(time + 0.08);
+
+        const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+        o.type='triangle'; o.frequency.setValueAtTime(330, time);
+        g.gain.setValueAtTime(0.12, time);
+        g.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
+        o.connect(g); g.connect(comp);
+        o.start(time); o.stop(time + 0.09);
+      }
+      function playHiHat(time){
+        const bufferSize = audioCtx.sampleRate * 0.03;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i=0;i<bufferSize;i++) data[i] = (Math.random()*2-1);
+        const src = audioCtx.createBufferSource(); src.buffer = buffer;
+        const hp = audioCtx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value = 7000;
+        const g = audioCtx.createGain(); g.gain.value = 0.08;
+        src.connect(hp); hp.connect(g); g.connect(comp);
+        src.start(time); src.stop(time + 0.03);
       }
 
-      musicBtn.addEventListener('click', ()=>{
-        if(!audioCtx || !musicOn){ startPad(); }
-        else{ stopPad(); }
-      });
+      // Pluck synth
+      function playPluck(freq, time){
+        const o = audioCtx.createOscillator();
+        const shaper = audioCtx.createWaveShaper();
+        // gentle saturation curve
+        const curve = new Float32Array(256);
+        for (let i=0;i<256;i++){ const x=i/255*2-1; curve[i]=Math.tanh(2.5*x); }
+        shaper.curve = curve; shaper.oversample='2x';
 
-      // Prepare audio on first user interaction (for autoplay policies)
-      window.addEventListener('pointerdown', ()=>{
-        if(!audioCtx) ensureAudio();
-      }, {once:true});
+        const filter = audioCtx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value = 1800; filter.Q.value = 0.7;
+
+        const env = envADSR(filter, 0.005, 0.08, 0.3, 0.12, 0.9, 0.18);
+
+        o.type='square';
+        o.frequency.setValueAtTime(freq, time);
+        o.connect(shaper); shaper.connect(env.node);
+
+        env.node.connect(comp);
+
+        o.start(time);
+        env.release(time + 0.15);
+        o.stop(time + 0.35);
+      }
+
+      function startMusic(){
+        ensureAudio();
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        musicOn = true; musicBtn.textContent = 'Music ♫ On';
+
+        // simple step sequencer
+        const secPerBeat = 60/tempo;
+        let step = 0;
+
+        function schedule(){
+          if(!musicOn || !audioCtx) return;
+          const now = audioCtx.currentTime;
+
+          // Drum pattern (4/4): K - H - S - H
+          playKick(now);
+          playHiHat(now + 0.5*secPerBeat);
+          playSnare(now + 1.0*secPerBeat);
+          playHiHat(now + 1.5*secPerBeat);
+          playKick(now + 2.0*secPerBeat);
+          playHiHat(now + 2.5*secPerBeat);
+          playSnare(now + 3.0*secPerBeat);
+          playHiHat(now + 3.5*secPerBeat);
+
+          // Pluck arpeggio (C major: C E G A | E G A C ...)
+          const scale = [261.63, 329.63, 392.00, 440.00, 523.25]; // C E G A C5
+          for(let i=0;i<4;i++){
+            const f = scale[(step + i) % scale.length];
+            playPluck(f, now + i*0.25*secPerBeat);
+          }
+          step = (step + 1) % scale.length;
+
+          // loop every bar
+          seqTimer = setTimeout(schedule, 4*secPerBeat*1000);
+        }
+        schedule();
+      }
+
+      function stopMusic(){
+        musicOn = false; musicBtn.textContent = 'Music ♫';
+        if(seqTimer){ clearTimeout(seqTimer); seqTimer = null; }
+        if(audioCtx){
+          const t = audioCtx.currentTime;
+          masterGain.gain.cancelScheduledValues(t);
+          masterGain.gain.setValueAtTime(masterGain.gain.value, t);
+          masterGain.gain.linearRampToValueAtTime(0.0, t + 0.4);
+          setTimeout(()=>{
+            try{ audioCtx.suspend(); }catch{}
+            masterGain.gain.value = 0.22; // reset default
+          }, 500);
+        }
+      }
+
+      function playClick(){
+        if(!audioCtx) return;
+        const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+        o.type='square'; o.frequency.value = 1200;
+        g.gain.value = 0.0001;
+        o.connect(g); g.connect(comp);
+        const now = audioCtx.currentTime;
+        g.gain.setValueAtTime(0.15, now);
+        g.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
+        o.start(now); o.stop(now + 0.07);
+      }
+
+      const musicBtn = document.getElementById('musicBtn');
+      musicBtn.addEventListener('click', ()=>{
+        if(!audioCtx || !musicOn){ startMusic(); } else { stopMusic(); }
+      });
+      // prepare audio after first user interaction (autoplay policy)
+      window.addEventListener('pointerdown', ()=>{ ensureAudio(); }, {once:true});
 
       /* init */
       window.addEventListener('load', ()=>{
