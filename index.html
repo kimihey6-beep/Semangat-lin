@@ -138,7 +138,7 @@
       .bg6{ top:66vh; animation-duration:21s; animation-delay:4.8s }
       .lander{ transition: transform .25s ease-out }
 
-      /* --- BLOOMS BOUQUET (naik & park lebih tinggi) --- */
+      /* --- BLOOMS BOUQUET --- */
       .bouquet{ position:absolute; bottom:40px; left:50%; transform:translateX(-50%); pointer-events:none; }
       .bloom{
         position:absolute; left:0; top:0; width:52px; aspect-ratio:1; opacity:0;
@@ -454,25 +454,11 @@
         meetTimer = setTimeout(meetInMiddle, 400);
       }
 
-      window.addEventListener('load', ()=>{
-        landOnN();
-        startMeeting();
-      });
-
-      let resizeTimer;
-      window.addEventListener('resize', ()=>{
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(()=>{ startMeeting(); }, 150);
-      });
-
-      // Replay button
-      document.getElementById('replayBtn').addEventListener('click', startMeeting);
-
       /* ===================== FUN MUSIC (WebAudio) ===================== */
-      // Beat + plucky arpeggio (ringan & ceria). Toggle dengan Music ♫
+      // Beat + plucky arpeggio
       let audioCtx = null, masterGain, comp, musicOn = false;
       let seqTimer = null, tempo = 100; // BPM
-      const musicBtn = document.getElementById('musicBtn');
+      const musicBtn = document.getElementById('musicBtn'); // single declaration
 
       function ensureAudio(){
         if(audioCtx) return;
@@ -645,17 +631,25 @@
         o.start(now); o.stop(now + 0.07);
       }
 
-      const musicBtn = document.getElementById('musicBtn');
-      musicBtn.addEventListener('click', ()=>{
-        if(!audioCtx || !musicOn){ startMusic(); } else { stopMusic(); }
-      });
-      // prepare audio after first user interaction (autoplay policy)
+      // Toggle & prepare audio after first interaction (autoplay policy)
+      musicBtn.addEventListener('click', ()=>{ if(!audioCtx || !musicOn){ startMusic(); } else { stopMusic(); } });
       window.addEventListener('pointerdown', ()=>{ ensureAudio(); }, {once:true});
 
-      /* init */
-      window.addEventListener('load', ()=>{
+      /* boot once */
+      function boot(){
         landOnN();
         startMeeting();
+      }
+      window.addEventListener('load', boot);
+
+      // Replay button
+      document.getElementById('replayBtn').addEventListener('click', boot);
+
+      // Relayout on resize (debounced)
+      let resizeTimer;
+      window.addEventListener('resize', ()=>{
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(()=>{ startMeeting(); }, 150);
       });
     </script>
   </body>
